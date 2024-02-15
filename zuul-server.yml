@@ -1,0 +1,36 @@
+server:
+  port: 8080 #the default port used for zuul service
+
+# Discovery Server Access
+eureka:
+  client:
+    enabled: true
+    registerWithEureka: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+zuul:
+  ignoredServices: '*'
+  host:
+    connect-timeout-millis: 20000
+    socket-timeout-millis: 20000
+  routes:
+    security:
+      path: /**
+      url: http://localhost:8099
+    mediapp-consults:
+      path: /consults
+      url: http://localhost:8090
+    mediapp-specialties:
+      path: /specialties
+      url: http://localhost:8090
+      stripPrefix: false
+      filters:
+        pre:
+          preDecorationFilter:
+            enabled: true
+        customFilter:
+          com.tlaxcala.microservices.gateway.Prefilter:
+            pre: true
+            route: true
+            post: true
